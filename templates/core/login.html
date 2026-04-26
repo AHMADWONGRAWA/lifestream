@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+  <div class="col-md-5">
+    <div class="card border-0 shadow" style="border-radius:20px;overflow:hidden;">
+      <div style="background:linear-gradient(135deg,#1A0000,#3d0000);padding:2.5rem;text-align:center;color:#fff;">
+        <i class="bi bi-droplet-fill text-danger" style="font-size:3rem;"></i>
+        <h3 class="fw-bold mt-2 mb-0">Welcome Back</h3>
+        <p style="opacity:.7;margin-top:.5rem;">Sign in to your LifeStream account</p>
+      </div>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label fw-semibold">{{ field.label }}</label>
+              {{ field }}
+              {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors.0 }}</div>{% endif %}
+            </div>
+          {% endfor %}
+          <div class="d-grid mt-3">
+            <button type="submit" class="btn btn-ls btn-lg">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+            </button>
+          </div>
+        </form>
+        <hr>
+        <p class="text-center text-muted mb-0">Don't have an account? <a href="{% url 'register' %}" class="text-danger fw-bold">Register here</a></p>
+        <p class="text-center mt-2"><a href="{% url 'track_request' %}" class="text-muted small"><i class="bi bi-geo-alt me-1"></i>Track a request without logging in</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

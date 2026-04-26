@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Track Blood Request{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="page-header text-center">
+      <i class="bi bi-geo-alt-fill" style="font-size:2.5rem;opacity:.8;"></i>
+      <h2 class="mt-2"><i class="bi bi-search me-2"></i>Track Your Blood Request</h2>
+      <p>Enter your reference number to check real-time status — no login required.</p>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="border-radius:16px;">
+      <div class="card-body p-4">
+        <form method="get">
+          <div class="input-group input-group-lg">
+            {{ form.reference_no }}
+            <button type="submit" class="btn btn-ls px-4">
+              <i class="bi bi-search me-2"></i>Track
+            </button>
+          </div>
+          <div class="form-text mt-1">Example: <code>LS-A1B2C3D4</code></div>
+        </form>
+      </div>
+    </div>
+
+    {% if result %}
+    <div class="card border-0 shadow mt-4" style="border-radius:16px;overflow:hidden;">
+      <!-- Status Header -->
+      <div style="background:linear-gradient(135deg,#1A0000,#3d0000);padding:1.5rem 2rem;color:#fff;">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="mb-0 opacity-75 small">Reference Number</p>
+            <h4 class="fw-bold mb-0"><code style="color:#E74C3C;">{{ result.reference_no }}</code></h4>
+          </div>
+          <span class="badge status-{{ result.status }} px-3 py-2 fs-6">{{ result.get_status_display }}</span>
+        </div>
+      </div>
+
+      <div class="card-body p-4">
+        <!-- Details grid -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3 text-center">
+            <span class="blood-badge" style="width:55px;height:55px;line-height:55px;font-size:1.1rem;">{{ result.blood_type }}</span>
+            <p class="mt-1 mb-0 small text-muted">Blood Type</p>
+          </div>
+          <div class="col-6 col-md-3 text-center">
+            <h4 class="fw-bold text-danger mb-0">{{ result.qty_units }}</h4>
+            <p class="mb-0 small text-muted">Unit{{ result.qty_units|pluralize }} Needed</p>
+          </div>
+          <div class="col-6 col-md-3 text-center">
+            <span class="badge badge-{{ result.urgency }} px-2 py-1 fs-6">{{ result.get_urgency_display }}</span>
+            <p class="mt-1 mb-0 small text-muted">Urgency</p>
+          </div>
+          <div class="col-6 col-md-3 text-center">
+            <p class="fw-bold mb-0">{{ result.submitted_at|date:"d M Y" }}</p>
+            <p class="mb-0 small text-muted">Submitted</p>
+          </div>
+        </div>
+
+        {% if result.hospital %}
+        <div class="alert alert-success">
+          <i class="bi bi-hospital-fill me-2"></i>
+          <strong>Blood located at:</strong> {{ result.hospital.name }}, {{ result.hospital.city }}
+          {% if result.hospital.phone %}<br><i class="bi bi-telephone me-1"></i>{{ result.hospital.phone }}{% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Progress tracker -->
+        <h6 class="fw-bold mb-3">Request Progress</h6>
+        <div class="position-relative" style="padding-left:2rem;">
+          {% with steps="pending,matched,donor_committed,fulfilled" %}
+          {% for step_code in steps.split %}
+          <div class="d-flex gap-3 mb-3">
+            <div style="position:absolute;left:0;width:24px;height:24px;border-radius:50%;
+              background:{% if result.status == step_code or result.status == 'fulfilled' and forloop.counter <= 4 %}#27AE60{% elif result.status == 'pending' and forloop.counter == 1 %}#27AE60{% else %}#dee2e6{% endif %};
+              border:2px solid #dee2e6;display:flex;align-items:center;justify-content:center;">
+              <i class="bi bi-check text-white" style="font-size:.7rem;"></i>
+            </div>
+            <div style="margin-left:1.5rem;">
+              <strong class="small">
+                {% if forloop.counter == 1 %}Request Received{% elif forloop.counter == 2 %}Blood Located{% elif forloop.counter == 3 %}Donor Committed{% else %}Fulfilled{% endif %}
+              </strong>
+              <p class="text-muted mb-0" style="font-size:.8rem;">
+                {% if forloop.counter == 1 %}Your request has been registered in the system.
+                {% elif forloop.counter == 2 %}Matching blood found at a nearby facility.
+                {% elif forloop.counter == 3 %}A donor has confirmed availability.
+                {% else %}Blood has been delivered successfully.{% endif %}
+              </p>
+            </div>
+          </div>
+          {% endfor %}
+          {% endwith %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

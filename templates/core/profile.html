@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="page-header">
+      <h2><i class="bi bi-person-gear me-2"></i>My Profile</h2>
+      <p>Keep your information up to date so we can alert you when you are needed most.</p>
+    </div>
+
+    <!-- Profile summary card -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;overflow:hidden;">
+      <div style="background:linear-gradient(135deg,#1A0000,#3d0000);padding:2rem;color:#fff;display:flex;align-items:center;gap:1.5rem;">
+        <div style="width:70px;height:70px;border-radius:50%;background:#C0392B;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;color:#fff;flex-shrink:0;">
+          {{ user.first_name.0|upper|default:user.username.0|upper }}
+        </div>
+        <div>
+          <h4 class="fw-bold mb-0">{{ user.get_full_name|default:user.username }}</h4>
+          <p class="mb-0 opacity-75">{{ user.get_role_display }} &bull; {{ user.email }}</p>
+          <div class="mt-1">
+            {% if user.blood_type %}<span class="badge bg-danger me-1">{{ user.blood_type }}</span>{% endif %}
+            {% if user.city %}<span class="badge bg-secondary">{{ user.city }}</span>{% endif %}
+            {% if user.role == 'donor' %}
+            <span class="badge {% if user.is_available %}bg-success{% else %}bg-warning text-dark{% endif %}">
+              {% if user.is_available %}Available{% else %}Unavailable{% endif %}
+            </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit form -->
+    <div class="card border-0 shadow-sm" style="border-radius:16px;">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-3">Edit Profile Information</h5>
+        <form method="post">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">First Name</label>
+              {{ form.first_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Last Name</label>
+              {{ form.last_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email</label>
+              {{ form.email }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Blood Type</label>
+              {{ form.blood_type }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Phone</label>
+              {{ form.phone }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">City</label>
+              {{ form.city }}
+            </div>
+            {% if user.role == 'donor' %}
+            <div class="col-12">
+              <div class="form-check form-switch">
+                {{ form.is_available }}
+                <label class="form-check-label fw-semibold" for="{{ form.is_available.id_for_label }}">
+                  I am available to donate blood
+                </label>
+              </div>
+              <div class="form-text">When enabled, you will receive alerts for urgent blood needs matching your type.</div>
+            </div>
+            {% endif %}
+          </div>
+          <div class="mt-4">
+            <button type="submit" class="btn btn-ls px-4">
+              <i class="bi bi-check-circle me-2"></i>Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

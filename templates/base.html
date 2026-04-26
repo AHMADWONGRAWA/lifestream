@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}LifeStream{% endblock %} | Blood Donation Management System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --ls-red:    #C0392B;
+      --ls-dark:   #1A0000;
+      --ls-navy:   #1D3557;
+      --ls-teal:   #0E7C7B;
+      --ls-gold:   #D4AC0D;
+      --ls-light:  #FDFEFE;
+    }
+    body { background: #f4f6f9; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+
+    /* ── Navbar ── */
+    .navbar-brand { font-weight: 900; font-size: 1.5rem; letter-spacing: 1px; }
+    .navbar-brand span { color: var(--ls-gold); }
+    .navbar { background: var(--ls-dark) !important; border-bottom: 3px solid var(--ls-red); }
+    .navbar .nav-link { color: #ddd !important; font-weight: 500; }
+    .navbar .nav-link:hover, .navbar .nav-link.active { color: #fff !important; }
+    .navbar .dropdown-menu { background: #1e0000; border: 1px solid #444; }
+    .navbar .dropdown-item { color: #ddd; }
+    .navbar .dropdown-item:hover { background: var(--ls-red); color: #fff; }
+
+    /* ── Sidebar ── */
+    .sidebar { min-height: calc(100vh - 70px); background: #fff; border-right: 2px solid #e9ecef; padding-top: 1.5rem; }
+    .sidebar .nav-link { color: #444; border-radius: 8px; margin: 2px 8px; padding: 10px 16px; font-weight: 500; }
+    .sidebar .nav-link:hover { background: #fff0f0; color: var(--ls-red); }
+    .sidebar .nav-link.active { background: var(--ls-red); color: #fff !important; }
+    .sidebar .nav-link i { margin-right: 8px; width: 20px; }
+
+    /* ── Cards ── */
+    .stat-card { border: none; border-radius: 16px; padding: 1.5rem; color: #fff; position: relative; overflow: hidden; }
+    .stat-card .icon { font-size: 3rem; opacity: .25; position: absolute; right: 16px; bottom: 8px; }
+    .stat-card h2 { font-size: 2.2rem; font-weight: 900; margin: 0; }
+    .stat-card p { margin: 0; opacity: .85; font-size: .95rem; }
+    .bg-ls-red   { background: linear-gradient(135deg, #C0392B, #922B21); }
+    .bg-ls-navy  { background: linear-gradient(135deg, #1D3557, #154360); }
+    .bg-ls-teal  { background: linear-gradient(135deg, #0E7C7B, #0a5c5b); }
+    .bg-ls-gold  { background: linear-gradient(135deg, #D4AC0D, #a8880a); }
+
+    /* ── Urgency badges ── */
+    .badge-critical { background: #C0392B; }
+    .badge-urgent   { background: #E67E22; }
+    .badge-routine  { background: #27AE60; }
+
+    /* ── Status badges ── */
+    .status-pending   { background: #F39C12; }
+    .status-matched   { background: #2ECC71; }
+    .status-fulfilled { background: #3498DB; }
+    .status-cancelled { background: #95A5A6; }
+    .status-donor_committed { background: #9B59B6; }
+
+    /* ── Tables ── */
+    .table { border-radius: 12px; overflow: hidden; }
+    .table thead th { background: var(--ls-navy); color: #fff; border: none; font-weight: 600; }
+    .table-hover tbody tr:hover { background: #fff0f0; }
+
+    /* ── Buttons ── */
+    .btn-ls { background: var(--ls-red); color: #fff; border: none; border-radius: 8px; font-weight: 600; }
+    .btn-ls:hover { background: #922B21; color: #fff; }
+
+    /* ── Page header ── */
+    .page-header { background: linear-gradient(135deg, var(--ls-dark), #3d0000); color: #fff; padding: 2rem; border-radius: 16px; margin-bottom: 1.5rem; }
+    .page-header h2 { font-weight: 800; margin: 0; }
+    .page-header p  { margin: 0; opacity: .8; }
+
+    /* ── Alerts ── */
+    .alert { border-radius: 10px; border-left: 4px solid; }
+    .alert-success { border-color: #27AE60; }
+    .alert-warning { border-color: #E67E22; }
+    .alert-danger  { border-color: #C0392B; }
+    .alert-info    { border-color: #3498DB; }
+
+    /* ── Blood type badges ── */
+    .blood-badge { display: inline-block; width: 40px; height: 40px; border-radius: 50%; background: var(--ls-red); color: #fff; font-weight: 900; font-size: .85rem; line-height: 40px; text-align: center; }
+
+    /* ── Critically low warning ── */
+    .critically-low { background: #fff3cd; border-left: 4px solid #E67E22; }
+
+    /* ── Footer ── */
+    .footer { background: var(--ls-dark); color: #aaa; padding: 1rem 0; margin-top: 3rem; font-size: .85rem; }
+
+    /* ── Notification card ── */
+    .notif-card { border-left: 4px solid var(--ls-red); border-radius: 10px; }
+    .notif-accepted { border-color: #27AE60; }
+    .notif-declined { border-color: #95A5A6; }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand text-white" href="{% url 'home' %}">
+      <i class="bi bi-droplet-fill text-danger me-1"></i>Life<span>Stream</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'search_blood' %}"><i class="bi bi-search-heart"></i> Find Blood</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'track_request' %}"><i class="bi bi-geo-alt"></i> Track Request</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle"></i>
+              {{ user.first_name|default:user.username }}
+              <span class="badge bg-danger ms-1">{{ user.get_role_display }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+              <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person-gear me-2"></i>Profile</a></li>
+              <li><hr class="dropdown-divider" style="border-color:#444"></li>
+              <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
+          <li class="nav-item"><a class="btn btn-danger btn-sm ms-2" href="{% url 'register' %}">Register</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- ── SIDEBAR (only when logged in) ── -->
+    {% if user.is_authenticated %}
+    <div class="col-lg-2 col-md-3 sidebar d-none d-md-block px-0">
+      <div class="px-2">
+        <p class="text-muted px-3 mb-1" style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Navigation</p>
+        <nav class="nav flex-column">
+          <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+          <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'profile' %}">
+            <i class="bi bi-person-fill"></i> My Profile
+          </a>
+          <a class="nav-link" href="{% url 'search_blood' %}"><i class="bi bi-search-heart"></i> Search Blood</a>
+          <a class="nav-link" href="{% url 'track_request' %}"><i class="bi bi-geo-alt-fill"></i> Track Request</a>
+
+          {% if user.role == 'donor' %}
+          <hr class="mx-3"><p class="text-muted px-3 mb-1" style="font-size:.7rem;font-weight:700;text-transform:uppercase;">Donor</p>
+          <a class="nav-link {% if 'notifications' in request.path %}active{% endif %}" href="{% url 'donor_notifications' %}">
+            <i class="bi bi-bell-fill"></i> Notifications
+          </a>
+          <a class="nav-link {% if 'donations' in request.path %}active{% endif %}" href="{% url 'donation_history' %}">
+            <i class="bi bi-heart-pulse-fill"></i> My Donations
+          </a>
+          {% endif %}
+
+          {% if user.role == 'patient' %}
+          <hr class="mx-3"><p class="text-muted px-3 mb-1" style="font-size:.7rem;font-weight:700;text-transform:uppercase;">Patient</p>
+          <a class="nav-link {% if 'submit' in request.path %}active{% endif %}" href="{% url 'submit_request' %}">
+            <i class="bi bi-plus-circle-fill"></i> Submit Request
+          </a>
+          <a class="nav-link {% if 'my_requests' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'my_requests' %}">
+            <i class="bi bi-list-check"></i> My Requests
+          </a>
+          {% endif %}
+
+          {% if user.role == 'hospital_staff' %}
+          <hr class="mx-3"><p class="text-muted px-3 mb-1" style="font-size:.7rem;font-weight:700;text-transform:uppercase;">Hospital</p>
+          <a class="nav-link {% if 'inventory' in request.path %}active{% endif %}" href="{% url 'inventory' %}">
+            <i class="bi bi-droplet-half"></i> Blood Inventory
+          </a>
+          <a class="nav-link {% if 'manage_requests' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'manage_requests' %}">
+            <i class="bi bi-clipboard2-pulse-fill"></i> Manage Requests
+          </a>
+          {% endif %}
+
+          {% if user.role == 'admin' or user.is_superuser %}
+          <hr class="mx-3"><p class="text-muted px-3 mb-1" style="font-size:.7rem;font-weight:700;text-transform:uppercase;">Admin</p>
+          <a class="nav-link {% if 'admin_users' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'admin_users' %}">
+            <i class="bi bi-people-fill"></i> Users
+          </a>
+          <a class="nav-link {% if 'create_staff' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'create_staff' %}">
+            <i class="bi bi-person-plus-fill"></i> Create Staff
+          </a>
+          <a class="nav-link {% if 'admin_hospitals' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'admin_hospitals' %}">
+            <i class="bi bi-hospital-fill"></i> Hospitals
+          </a>
+          <a class="nav-link {% if 'inventory' in request.path %}active{% endif %}" href="{% url 'inventory' %}">
+            <i class="bi bi-droplet-half"></i> Inventory
+          </a>
+          <a class="nav-link {% if 'manage_requests' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'manage_requests' %}">
+            <i class="bi bi-clipboard2-pulse-fill"></i> All Requests
+          </a>
+          <a class="nav-link {% if 'reports' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'reports' %}">
+            <i class="bi bi-bar-chart-fill"></i> Reports
+          </a>
+          {% endif %}
+        </nav>
+      </div>
+    </div>
+
+    <!-- ── MAIN CONTENT ── -->
+    <div class="col-lg-10 col-md-9 py-4 px-4">
+    {% else %}
+    <div class="col-12 py-4 px-4">
+    {% endif %}
+
+      <!-- Flash messages -->
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+            <i class="bi bi-{% if msg.tags == 'success' %}check-circle{% elif msg.tags == 'warning' %}exclamation-triangle{% elif msg.tags == 'error' or msg.tags == 'danger' %}x-circle{% else %}info-circle{% endif %}-fill me-2"></i>
+            {{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+
+<footer class="footer text-center">
+  <div class="container">
+    <span><i class="bi bi-droplet-fill text-danger"></i> LifeStream Blood Donation Management System &copy; 2026 &mdash; Islamic University, Faculty of Computer & Information Systems</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

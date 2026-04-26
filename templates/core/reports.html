@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}System Reports{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h2><i class="bi bi-bar-chart-fill me-2"></i>System Reports & Analytics</h2>
+  <p>A complete overview of LifeStream operations, blood supply, and donor activity.</p>
+</div>
+
+<!-- Top KPI cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-2"><div class="stat-card bg-ls-red"><p>Total Requests</p><h2>{{ total_requests }}</h2><div class="icon"><i class="bi bi-clipboard2-pulse-fill"></i></div></div></div>
+  <div class="col-md-2"><div class="stat-card bg-ls-teal"><p>Fulfilled</p><h2>{{ fulfilled }}</h2><div class="icon"><i class="bi bi-check-circle-fill"></i></div></div></div>
+  <div class="col-md-2"><div class="stat-card bg-ls-gold"><p>Pending</p><h2>{{ pending }}</h2><div class="icon"><i class="bi bi-hourglass-split"></i></div></div></div>
+  <div class="col-md-2"><div class="stat-card bg-ls-navy"><p>Total Donors</p><h2>{{ total_donors }}</h2><div class="icon"><i class="bi bi-people-fill"></i></div></div></div>
+  <div class="col-md-2"><div class="stat-card bg-ls-red"><p>Available Donors</p><h2>{{ available_donors }}</h2><div class="icon"><i class="bi bi-heart-pulse-fill"></i></div></div></div>
+  <div class="col-md-2"><div class="stat-card bg-ls-teal"><p>Total Donations</p><h2>{{ total_donations }}</h2><div class="icon"><i class="bi bi-droplet-fill"></i></div></div></div>
+</div>
+
+<!-- Blood type breakdown & critical stock -->
+<div class="row g-3 mb-4">
+  <div class="col-md-7">
+    <div class="card border-0 shadow-sm h-100" style="border-radius:16px;">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-4"><i class="bi bi-droplet-fill text-danger me-2"></i>Blood Type Supply Summary</h5>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead><tr><th>Blood Type</th><th>Total Units (All Hospitals)</th><th>Registered Donors</th><th>Supply Status</th></tr></thead>
+            <tbody>
+              {% for b in blood_summary %}
+              <tr>
+                <td><span class="blood-badge">{{ b.type }}</span></td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="progress flex-grow-1" style="height:10px;border-radius:6px;max-width:150px;">
+                      <div class="progress-bar bg-danger" style="width:{% widthratio b.total 100 100 %}%;max-width:100%;"></div>
+                    </div>
+                    <strong>{{ b.total }}</strong>
+                  </div>
+                </td>
+                <td>{{ b.donors }} donor{{ b.donors|pluralize }}</td>
+                <td>
+                  {% if b.total == 0 %}<span class="badge bg-danger">Out of Stock</span>
+                  {% elif b.total < 10 %}<span class="badge bg-warning text-dark">Critical</span>
+                  {% elif b.total < 30 %}<span class="badge bg-info">Low</span>
+                  {% else %}<span class="badge bg-success">Adequate</span>{% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-5">
+    {% if critical_inv %}
+    <div class="card border-0 shadow-sm mb-3" style="border-radius:16px;border-left:4px solid #E67E22!important;">
+      <div class="card-body p-4">
+        <h6 class="fw-bold text-warning mb-3"><i class="bi bi-exclamation-triangle-fill me-2"></i>Critically Low Stock</h6>
+        {% for inv in critical_inv %}
+        <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+          <div>
+            <span class="blood-badge me-2" style="width:28px;height:28px;line-height:28px;font-size:.75rem;">{{ inv.blood_type }}</span>
+            <strong>{{ inv.hospital.name }}</strong>
+            <small class="text-muted d-block">{{ inv.hospital.city }}</small>
+          </div>
+          <span class="badge bg-warning text-dark">{{ inv.qty_available }}u</span>
+        </div>
+        {% endfor %}
+        <a href="{% url 'inventory' %}" class="btn btn-warning btn-sm w-100 mt-2">
+          <i class="bi bi-pencil me-1"></i>Update Inventory
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="card border-0 shadow-sm" style="border-radius:16px;">
+      <div class="card-body p-4">
+        <h6 class="fw-bold mb-3"><i class="bi bi-clock-history text-muted me-2"></i>Recent System Activity</h6>
+        {% for log in recent_activity %}
+        <div class="d-flex gap-2 mb-2 pb-2 border-bottom">
+          <div style="width:32px;height:32px;border-radius:50%;background:#f8f9fa;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="bi bi-person-fill text-muted small"></i>
+          </div>
+          <div>
+            <small class="fw-bold">{{ log.actor.username|default:"System" }}</small>
+            <small class="text-muted d-block">{{ log.action }} {% if log.target %}— <code>{{ log.target }}</code>{% endif %}</small>
+            <small class="text-muted" style="font-size:.75rem;">{{ log.logged_at|date:"d M, H:i" }}</small>
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-muted small">No activity logged yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

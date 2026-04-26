@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Donation History{% endblock %}
+{% block content %}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+  <div>
+    <h2><i class="bi bi-heart-pulse-fill me-2"></i>My Donation History</h2>
+    <p>Every donation you record is a life potentially saved.</p>
+  </div>
+  <a href="{% url 'add_donation' %}" class="btn btn-light fw-bold">
+    <i class="bi bi-plus-circle me-1"></i> Record Donation
+  </a>
+</div>
+
+{% if donations %}
+<div class="row g-3">
+  {% for d in donations %}
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm" style="border-radius:14px;border-left:4px solid #C0392B!important;">
+      <div class="card-body p-3 d-flex gap-3 align-items-center">
+        <span class="blood-badge" style="width:50px;height:50px;line-height:50px;font-size:1rem;flex-shrink:0;">{{ d.blood_type }}</span>
+        <div class="flex-grow-1">
+          <p class="fw-bold mb-0">{{ d.qty_ml }} ml donated on {{ d.donated_at|date:"d M Y" }}</p>
+          <small class="text-muted">
+            <i class="bi bi-hospital me-1"></i>{{ d.hospital.name|default:"Hospital not specified" }}
+          </small>
+          {% if d.notes %}<br><small class="text-muted fst-italic">{{ d.notes }}</small>{% endif %}
+        </div>
+        <i class="bi bi-heart-fill text-danger opacity-50" style="font-size:1.5rem;"></i>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+  <i class="bi bi-heart" style="font-size:4rem;color:#ddd;"></i>
+  <h5 class="mt-3 text-muted">No donations recorded yet</h5>
+  <p class="text-muted">Record your first donation to track your impact.</p>
+  <a href="{% url 'add_donation' %}" class="btn btn-ls mt-2">
+    <i class="bi bi-plus-circle me-2"></i>Record a Donation
+  </a>
+</div>
+{% endif %}
+
+{% endblock %}

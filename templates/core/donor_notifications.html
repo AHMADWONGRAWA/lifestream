@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}My Notifications{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h2><i class="bi bi-bell-fill me-2"></i>My Blood Donation Alerts</h2>
+  <p>These are urgent blood needs that match your blood type. Please respond as quickly as possible.</p>
+</div>
+
+{% if notifications %}
+<div class="row g-3">
+  {% for n in notifications %}
+  <div class="col-12">
+    <div class="card border-0 shadow-sm notif-card {% if n.status == 'accepted' %}notif-accepted{% elif n.status == 'declined' %}notif-declined{% endif %}"
+         style="border-radius:14px;">
+      <div class="card-body p-4">
+        <div class="row align-items-center">
+          <div class="col-md-1 text-center">
+            <span class="blood-badge" style="width:48px;height:48px;line-height:48px;font-size:1rem;">
+              {{ n.blood_request.blood_type }}
+            </span>
+          </div>
+
+          <div class="col-md-6">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <h6 class="fw-bold mb-0">{{ n.blood_request.blood_type }} Blood Needed</h6>
+              <span class="badge badge-{{ n.blood_request.urgency }}">{{ n.blood_request.get_urgency_display }}</span>
+            </div>
+            <p class="text-muted mb-1 small">{{ n.message }}</p>
+            <small class="text-muted">
+              <i class="bi bi-clock me-1"></i>Received: {{ n.sent_at|date:"d M Y, H:i" }}
+              &nbsp;|&nbsp;
+              <i class="bi bi-hash me-1"></i>Ref: <code>{{ n.blood_request.reference_no }}</code>
+            </small>
+          </div>
+
+          <div class="col-md-2 text-center">
+            <span class="badge fs-6 px-3 py-2
+              {% if n.status == 'accepted' %}bg-success
+              {% elif n.status == 'declined' %}bg-secondary
+              {% elif n.status == 'read' %}bg-info
+              {% else %}bg-warning text-dark{% endif %}">
+              <i class="bi bi-{% if n.status == 'accepted' %}check-circle{% elif n.status == 'declined' %}x-circle{% else %}clock{% endif %} me-1"></i>
+              {{ n.get_status_display }}
+            </span>
+          </div>
+
+          <div class="col-md-3 text-end">
+            {% if n.status in 'sent,read' %}
+            <div class="d-flex gap-2 justify-content-end">
+              <form method="post" action="{% url 'respond_notification' n.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="response" value="accepted">
+                <button type="submit" class="btn btn-success">
+                  <i class="bi bi-check-circle-fill me-1"></i>I'm Available
+                </button>
+              </form>
+              <form method="post" action="{% url 'respond_notification' n.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="response" value="declined">
+                <button type="submit" class="btn btn-outline-secondary">Decline</button>
+              </form>
+            </div>
+            {% elif n.status == 'accepted' %}
+            <div class="text-success fw-bold">
+              <i class="bi bi-check-circle-fill me-1"></i>You confirmed availability.<br>
+              <small class="text-muted fw-normal">Please contact the hospital directly.</small>
+            </div>
+            {% else %}
+            <span class="text-muted">Response recorded.</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="text-center py-5">
+  <i class="bi bi-bell-slash" style="font-size:4rem;color:#ddd;"></i>
+  <h5 class="mt-3 text-muted">No notifications yet</h5>
+  <p class="text-muted">You will be alerted here and by email when blood matching your type is urgently needed.</p>
+  <p class="text-muted small">Make sure your <a href="{% url 'profile' %}" class="text-danger">profile</a> shows the correct blood type and that you are marked as <strong>Available</strong>.</p>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-3">
+  <div class="col-md-7">
+    <div class="card border-0 shadow" style="border-radius:20px;overflow:hidden;">
+      <div style="background:linear-gradient(135deg,#1A0000,#3d0000);padding:2rem;text-align:center;color:#fff;">
+        <i class="bi bi-person-plus-fill text-danger" style="font-size:2.5rem;"></i>
+        <h3 class="fw-bold mt-2 mb-0">Join LifeStream</h3>
+        <p style="opacity:.7;margin-top:.5rem;">Create your account and help save lives</p>
+      </div>
+      <div class="card-body p-4">
+        <form method="post" id="regForm">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">First Name</label>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}<div class="text-danger small">{{ form.first_name.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Last Name</label>
+              {{ form.last_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Username</label>
+              {{ form.username }}
+              {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email</label>
+              {{ form.email }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Role <span class="text-danger">*</span></label>
+              {{ form.role }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Blood Type</label>
+              {{ form.blood_type }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Phone</label>
+              {{ form.phone }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">City</label>
+              {{ form.city }}
+            </div>
+            <div class="col-12" id="hospitalField" style="display:none;">
+              <label class="form-label fw-semibold">Hospital (for staff)</label>
+              {{ form.hospital }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Password</label>
+              {{ form.password1 }}
+              {% if form.password1.errors %}<div class="text-danger small">{{ form.password1.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Confirm Password</label>
+              {{ form.password2 }}
+              {% if form.password2.errors %}<div class="text-danger small">{{ form.password2.errors.0 }}</div>{% endif %}
+            </div>
+          </div>
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-ls btn-lg">
+              <i class="bi bi-person-check-fill me-2"></i>Create Account
+            </button>
+          </div>
+        </form>
+        <hr>
+        <p class="text-center text-muted mb-0">Already registered? <a href="{% url 'login' %}" class="text-danger fw-bold">Sign in</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  const roleField = document.getElementById('id_role');
+  const hospitalField = document.getElementById('hospitalField');
+  function toggleHospital() {
+    hospitalField.style.display = roleField.value === 'hospital_staff' ? 'block' : 'none';
+  }
+  roleField.addEventListener('change', toggleHospital);
+  toggleHospital();
+</script>
+{% endblock %}

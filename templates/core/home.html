@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+
+<!-- Hero -->
+<div style="background:linear-gradient(135deg,#1A0000,#3d0000);color:#fff;padding:5rem 2rem;border-radius:20px;margin-bottom:2rem;position:relative;overflow:hidden;">
+  <div style="position:absolute;right:-40px;top:-40px;width:300px;height:300px;border-radius:50%;background:rgba(192,57,43,0.15);"></div>
+  <div class="row align-items-center">
+    <div class="col-lg-7">
+      <p style="color:#E74C3C;font-weight:700;letter-spacing:2px;font-size:.9rem;">LIFESTREAM BLOOD DONATION SYSTEM</p>
+      <h1 style="font-size:3.2rem;font-weight:900;line-height:1.1;">Every Drop<br>Saves a Life<span style="color:#E74C3C;">.</span></h1>
+      <p style="opacity:.8;font-size:1.1rem;margin:1.5rem 0;">A centralized platform connecting blood donors, patients, hospitals and blood banks — ensuring the right blood reaches the right person at the right time.</p>
+      <div class="d-flex gap-3 flex-wrap">
+        <a href="{% url 'register' %}" class="btn btn-danger btn-lg px-4" style="border-radius:10px;font-weight:700;">
+          <i class="bi bi-heart-fill me-2"></i>Register as Donor
+        </a>
+        <a href="{% url 'search_blood' %}" class="btn btn-outline-light btn-lg px-4" style="border-radius:10px;">
+          <i class="bi bi-search-heart me-2"></i>Find Blood Now
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-5 text-center d-none d-lg-block">
+      <i class="bi bi-droplet-fill" style="font-size:10rem;opacity:.3;color:#E74C3C;"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card bg-ls-red">
+      <p>Registered Donors</p>
+      <h2>{{ stats.donors }}</h2>
+      <div class="icon"><i class="bi bi-people-fill"></i></div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card bg-ls-navy">
+      <p>Registered Hospitals</p>
+      <h2>{{ stats.hospitals }}</h2>
+      <div class="icon"><i class="bi bi-hospital-fill"></i></div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card bg-ls-teal">
+      <p>Requests Fulfilled</p>
+      <h2>{{ stats.requests }}</h2>
+      <div class="icon"><i class="bi bi-check-circle-fill"></i></div>
+    </div>
+  </div>
+</div>
+
+<!-- How it works -->
+<div class="card border-0 shadow-sm" style="border-radius:16px;margin-bottom:2rem;">
+  <div class="card-body p-4">
+    <h3 class="fw-bold mb-4" style="color:#1A0000;"><i class="bi bi-diagram-3-fill text-danger me-2"></i>How LifeStream Works</h3>
+    <div class="row g-4 text-center">
+      {% for step in "1234"|make_list %}
+      <div class="col-md-3">
+        <div style="width:60px;height:60px;border-radius:50%;background:#C0392B;color:#fff;font-size:1.5rem;font-weight:900;line-height:60px;margin:0 auto 1rem;">{{ step }}</div>
+        {% if forloop.counter == 1 %}
+        <h6 class="fw-bold">Register</h6><p class="text-muted small">Create your account as a donor, patient, or hospital staff.</p>
+        {% elif forloop.counter == 2 %}
+        <h6 class="fw-bold">Submit Request</h6><p class="text-muted small">Patients submit blood requests with type, quantity, and urgency.</p>
+        {% elif forloop.counter == 3 %}
+        <h6 class="fw-bold">Match & Notify</h6><p class="text-muted small">System finds matching blood or alerts eligible donors instantly.</p>
+        {% else %}
+        <h6 class="fw-bold">Save a Life</h6><p class="text-muted small">Donors respond, hospitals confirm, blood is delivered.</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Quick actions for visitors -->
+<div class="row g-3">
+  <div class="col-md-6">
+    <a href="{% url 'track_request' %}" class="card border-0 shadow-sm text-decoration-none" style="border-radius:16px;border-left:4px solid #C0392B!important;">
+      <div class="card-body p-4 d-flex align-items-center gap-3">
+        <i class="bi bi-geo-alt-fill text-danger" style="font-size:2.5rem;"></i>
+        <div><h5 class="fw-bold mb-1 text-dark">Track a Blood Request</h5><p class="text-muted mb-0 small">Enter your reference number to check real-time status.</p></div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-6">
+    <a href="{% url 'search_blood' %}" class="card border-0 shadow-sm text-decoration-none" style="border-radius:16px;border-left:4px solid #0E7C7B!important;">
+      <div class="card-body p-4 d-flex align-items-center gap-3">
+        <i class="bi bi-search-heart" style="font-size:2.5rem;color:#0E7C7B;"></i>
+        <div><h5 class="fw-bold mb-1 text-dark">Search Blood Availability</h5><p class="text-muted mb-0 small">Find available blood by type and location — no login needed.</p></div>
+      </div>
+    </a>
+  </div>
+</div>
+
+{% endblock %}

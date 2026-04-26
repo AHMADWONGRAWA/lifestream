@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Submit Blood Request{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h2><i class="bi bi-plus-circle-fill me-2"></i>Submit a Blood Request</h2>
+  <p>Fill in the details below. We will search for available blood and alert eligible donors immediately.</p>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm" style="border-radius:16px;">
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Blood Type Required <span class="text-danger">*</span></label>
+            {{ form.blood_type }}
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Quantity (units) <span class="text-danger">*</span></label>
+              {{ form.qty_units }}
+              <div class="form-text">1 unit ≈ 450 ml whole blood</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Urgency Level <span class="text-danger">*</span></label>
+              {{ form.urgency }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Preferred Hospital</label>
+            {{ form.hospital }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Additional Notes</label>
+            {{ form.notes }}
+          </div>
+
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            Once submitted, the system will search nearby hospitals for available blood. If none is found, eligible donors matching your blood type will be <strong>automatically notified</strong>.
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-ls btn-lg px-4">
+              <i class="bi bi-send-fill me-2"></i>Submit Request
+            </button>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-lg px-4">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm" style="border-radius:16px;border-left:4px solid #C0392B!important;">
+      <div class="card-body p-4">
+        <h6 class="fw-bold text-danger mb-3"><i class="bi bi-info-circle me-2"></i>What Happens Next?</h6>
+        <div class="d-flex gap-2 mb-3">
+          <div class="blood-badge flex-shrink-0" style="width:28px;height:28px;line-height:28px;font-size:.8rem;">1</div>
+          <p class="mb-0 small">Your request is submitted and assigned a unique reference number.</p>
+        </div>
+        <div class="d-flex gap-2 mb-3">
+          <div class="blood-badge flex-shrink-0" style="width:28px;height:28px;line-height:28px;font-size:.8rem;">2</div>
+          <p class="mb-0 small">The system searches all registered hospitals for matching blood stock.</p>
+        </div>
+        <div class="d-flex gap-2 mb-3">
+          <div class="blood-badge flex-shrink-0" style="width:28px;height:28px;line-height:28px;font-size:.8rem;">3</div>
+          <p class="mb-0 small">If no stock is found, eligible donors with your blood type are alerted instantly.</p>
+        </div>
+        <div class="d-flex gap-2">
+          <div class="blood-badge flex-shrink-0" style="width:28px;height:28px;line-height:28px;font-size:.8rem;">4</div>
+          <p class="mb-0 small">You can track your request status at any time using your reference number.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card border-0 shadow-sm mt-3" style="border-radius:16px;">
+      <div class="card-body p-3 text-center">
+        <p class="text-muted small mb-2">Already submitted a request?</p>
+        <a href="{% url 'track_request' %}" class="btn btn-outline-danger btn-sm w-100">
+          <i class="bi bi-geo-alt me-1"></i>Track Your Request
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
