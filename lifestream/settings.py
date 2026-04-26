@@ -82,3 +82,7 @@ EMAIL_USE_TLS    = True
 EMAIL_HOST_USER  = os.environ.get('EMAIL_HOST_USER', 'ahmadabdulsamie123@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'zarimswflorkzuly')
 DEFAULT_FROM_EMAIL = f'LifeStream <{EMAIL_HOST_USER}>'
+
+CSRF_TRUSTED_ORIGINS = ['https://web-production-fd6c0.up.railway.app']
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
