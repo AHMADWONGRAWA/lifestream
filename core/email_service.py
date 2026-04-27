@@ -30,14 +30,14 @@ def _send(subject, message, recipient_list, html_message=None):
                 to=recipients,
             )
             email.attach_alternative(html_message, "text/html")
-            email.send(fail_silently=False)
+            email.send(fail_silently=True)
         else:
             send_mail(
                 subject=subject,
                 message=message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=recipients,
-                fail_silently=False,
+                fail_silently=True,
             )
         print(f"[EMAIL SENT] To: {recipients} | Subject: {subject}")
     except Exception as e:
